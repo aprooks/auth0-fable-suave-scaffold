@@ -3,8 +3,11 @@ source https://nuget.org/api/v2
 nuget FSharp.Core redirects: force
 nuget FSharp.NET.Sdk
 nuget Fable.JsonConverter
+nuget Microsoft.IdentityModel.Protocols
+nuget Microsoft.IdentityModel.Protocols.OpenIdConnect
 nuget Suave
 nuget Microsoft.Extensions.Logging.Console
+nuget System.IdentityModel.Tokens.Jwt
 nuget System.Net.NetworkInformation
 nuget Newtonsoft.Json
 nuget jose-jwt

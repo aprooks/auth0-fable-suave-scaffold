@@ -46,3 +46,4 @@ let isValid (jwt:string) : ServerTypes.UserRights option =
         Some token
     with
     | _ -> None
+
