@@ -5,7 +5,9 @@
     "react": "^15.6.1",
     "react-bootstrap": "^0.31.0",
     "react-dom": "^15.6.1",
-    "remotedev": "^0.2.7"
+    "remotedev": "^0.2.7",
+    "auth0-js": "^8.8.0",
+    "auth0-lock": "^10.18.0"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",

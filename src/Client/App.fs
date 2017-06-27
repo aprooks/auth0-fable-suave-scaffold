@@ -13,12 +13,15 @@ open Elmish.Browser.Navigation
 open Client.Messages
 open Elmish.Browser.UrlParser
 
+Client.LoginAuth.login() 
+
 // Model
 
 type SubModel =
   | NoSubModel
   | LoginModel of Login.Model
   | WishListModel of WishList.Model
+  | LoginAuthModel
 
 type Model =
   { Page : Page
@@ -31,7 +34,8 @@ let pageParser : Parser<Page->_,_> =
     oneOf
         [ map Home (s "home")
           map Page.Login (s "login")
-          map WishList (s "wishlist") ]
+          map WishList (s "wishlist")
+          map Page.LoginAuth (s "loginauth") ]
 
 let urlUpdate (result:Page option) model =
     match result with
@@ -53,6 +57,8 @@ let urlUpdate (result:Page option) model =
 
     | Some (Home as page) ->
         { model with Page = page; Menu = { model.Menu with query = "" } }, []
+    | Some (LoginAuth as page) ->
+        { model with Page = page}, []
 
 let init result =
     let menu,menuCmd = Menu.init()
@@ -123,6 +129,12 @@ let update msg model =
 
     | AppMsg.Logout, _ ->
         model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
+    
+    | AppMsg.LoginAuthMsg, _ -> 
+        let m,cmd = Login.init None
+        { model with
+            Page = Page.Login
+            SubModel = LoginModel m }, Cmd.batch [cmd; Navigation.modifyUrl (toHash Page.LoginAuth) ]
 
 // VIEW
 
@@ -148,6 +160,8 @@ let viewPage model dispatch =
         | WishListModel m ->
             [ div [ ] [ lazyView2 WishList.view m dispatch ]]
         | _ -> [ ]
+    | Page.LoginAuth ->
+        [ words 60 "Login Auth0"]
 
 /// Constructs the view for the application given the model.
 let view model dispatch =
