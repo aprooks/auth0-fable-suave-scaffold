@@ -35,6 +35,12 @@ let start clientPath port =
                 path "/api/wishlist/" >=> WishList.postWishList
             ]
 
+            GET >=> path "/token/test" >=> 
+                fun ctx -> 
+                    Auth0.useToken ctx (fun claims -> async {
+                        return! Successful.OK (FableJson.toJson (claims.Claims|> Seq.map (fun c->c.Value))) ctx
+                    })   
+
             NOT_FOUND "Page not found."
 
         ] >=> logWithLevelStructured Logging.Info logger logFormatStructured
