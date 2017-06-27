@@ -14,7 +14,7 @@ let getPortsOrDefault defaultVal =
     | value -> value |> uint16
 
 let testToken ()=
-    let principal = JwtToken.claims JwtToken.token
+    let principal = JwtToken.isValid JwtToken.exampleToken |> Option.get
     
     printfn "loaded claims from example:"
     principal.Claims |> Seq.iter(fun c -> printfn "%s %s" c.Type c.Value)
