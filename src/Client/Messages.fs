@@ -31,6 +31,7 @@ type AppMsg =
   | LoginMsg of LoginMsg
   | WishListMsg of WishListMsg
   | Logout
+  | LoginAuthMsg
 
 /// The user data sent with every message.
 type UserData = 
@@ -42,9 +43,12 @@ type Page =
   | Home 
   | Login
   | WishList
+  | LoginAuth
 
 let toHash =
   function
   | Home -> "#home"
   | Login -> "#login"
   | WishList -> "#wishlist"
+  | LoginAuth -> "#loginauth"
+  
