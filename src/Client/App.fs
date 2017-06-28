@@ -12,8 +12,8 @@ open Fable.PowerPack
 open Elmish.Browser.Navigation
 open Client.Messages
 open Elmish.Browser.UrlParser
-
-Client.LoginAuth.login() 
+open Fable.Import.JS
+// Client.LoginAuth.login() 
 
 // Model
 
@@ -21,7 +21,7 @@ type SubModel =
   | NoSubModel
   | LoginModel of Login.Model
   | WishListModel of WishList.Model
-  | LoginAuthModel
+  | LoginAuthModel of string
 
 type Model =
   { Page : Page
@@ -40,8 +40,13 @@ let pageParser : Parser<Page->_,_> =
 let urlUpdate (result:Page option) model =
     match result with
     | None ->
-        Browser.console.error("Error parsing url")
-        ( model, Navigation.modifyUrl (toHash model.Page) )
+        match LoginAuth.isAccessToken() with 
+        | Some token -> 
+            debugger()
+            ({model with Page = LoginAuth; SubModel = LoginAuthModel token},[])
+        | None ->
+            Browser.console.error("Error parsing url")
+            ( model, Navigation.modifyUrl (toHash model.Page) )
 
     | Some (Page.Login as page) ->
         let m,cmd = Login.init model.Menu.User
@@ -130,11 +135,11 @@ let update msg model =
     | AppMsg.Logout, _ ->
         model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
     
-    | AppMsg.LoginAuthMsg, _ -> 
-        let m,cmd = Login.init None
-        { model with
-            Page = Page.Login
-            SubModel = LoginModel m }, Cmd.batch [cmd; Navigation.modifyUrl (toHash Page.LoginAuth) ]
+    // | AppMsg.LoginAuthMsg, _ -> 
+    //     let m,cmd = Login.init None
+    //     { model with
+    //         Page = Page.Login
+    //         SubModel = LoginModel m }, Cmd.batch [cmd; Navigation.modifyUrl (toHash Page.LoginAuth) ]
 
 // VIEW
 
@@ -161,8 +166,11 @@ let viewPage model dispatch =
             [ div [ ] [ lazyView2 WishList.view m dispatch ]]
         | _ -> [ ]
     | Page.LoginAuth ->
-        [ words 60 "Login Auth0"]
-
+        match model.SubModel with 
+        | LoginAuthModel token ->
+            [ div [] [LoginAuth.view token dispatch]]
+        | _ -> [ ]
+    
 /// Constructs the view for the application given the model.
 let view model dispatch =
   div []

@@ -31,7 +31,8 @@ type AppMsg =
   | LoginMsg of LoginMsg
   | WishListMsg of WishListMsg
   | Logout
-  | LoginAuthMsg
+  // | ValidateCallback of string
+
 
 /// The user data sent with every message.
 type UserData = 
