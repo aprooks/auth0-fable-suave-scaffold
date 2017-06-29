@@ -17,8 +17,8 @@ let myConfig =
 
 
 type Model = 
-| Callback 
-| Authentication
+| Login 
+| TokenValidation of string
 
 let auth0lock:JsConstructor<string,string,obj> = importDefault "auth0-lock/lib/index.js"
 
@@ -48,12 +48,17 @@ open Messages
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 
-let view (token:string) (dispatch: AppMsg -> unit) = 
-    lock?resumeAuth(token,fun (err,result)->
-        AppMsg.LoggedIn |> dispatch
-    ) |> ignore
-    
-    div [Id "loginAuth view"] [str "Login auth0"]
+let view (model:Model) (dispatch: AppMsg -> unit) = 
+    match model with 
+    | TokenValidation token ->
+        lock?resumeAuth(token,fun (err,result)->
+            AppMsg.LoggedIn |> dispatch
+        ) |> ignore
+        
+        div [Id "loginAuth view"] [str "Login auth0"]
+    | Model.Login ->
+        lock?show() |> ignore
+        div [] [str "Auth 0 stub"]
 
 let login() =
     match Utils.load "auth" with

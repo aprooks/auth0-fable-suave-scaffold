@@ -21,7 +21,7 @@ type SubModel =
   | NoSubModel
   | LoginModel of Login.Model
   | WishListModel of WishList.Model
-  | LoginAuthModel of string
+  | LoginAuthModel of LoginAuth.Model
 
 type Model =
   { Page : Page
@@ -43,7 +43,7 @@ let urlUpdate (result:Page option) model =
         match LoginAuth.isAccessToken() with 
         | Some token -> 
             debugger()
-            ({model with Page = LoginAuth; SubModel = LoginAuthModel token},[])
+            ({model with Page = LoginAuth; SubModel = LoginAuth.TokenValidation token |> LoginAuthModel},[])
         | None ->
             Browser.console.error("Error parsing url")
             ( model, Navigation.modifyUrl (toHash model.Page) )
@@ -134,13 +134,11 @@ let update msg model =
 
     | AppMsg.Logout, _ ->
         model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
-    
-    // | AppMsg.LoginAuthMsg, _ -> 
-    //     let m,cmd = Login.init None
-    //     { model with
-    //         Page = Page.Login
-    //         SubModel = LoginModel m }, Cmd.batch [cmd; Navigation.modifyUrl (toHash Page.LoginAuth) ]
-
+    | AppMsg.ShowLogin, _ ->
+        {model with
+            Page = Page.LoginAuth
+            SubModel = LoginAuth.Model.Login |> LoginAuthModel },
+        Cmd.none
 // VIEW
 
 open Fable.Helpers.React
@@ -167,8 +165,8 @@ let viewPage model dispatch =
         | _ -> [ ]
     | Page.LoginAuth ->
         match model.SubModel with 
-        | LoginAuthModel token ->
-            [ div [] [LoginAuth.view token dispatch]]
+        | LoginAuthModel model ->
+            [ div [] [ LoginAuth.view model dispatch ]]
         | _ -> [ ]
     
 /// Constructs the view for the application given the model.

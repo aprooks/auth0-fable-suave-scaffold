@@ -31,4 +31,5 @@ let view (model:Model) dispatch =
               yield viewLink (LoginAuth) "LoginAuth"
           else 
               yield buttonLink "logout" (fun _ -> dispatch Logout) [ str "Logout" ]
+          yield buttonLink "Login0" (fun _ -> dispatch ShowLogin) [str "Login0"]
         ]
