@@ -51,9 +51,20 @@ open Fable.Helpers.React.Props
 let view (model:Model) (dispatch: AppMsg -> unit) = 
     match model with 
     | TokenValidation token ->
-        lock?resumeAuth(token,fun (err,result)->
-            AppMsg.LoggedIn |> dispatch
-        ) |> ignore
+        lock?resumeAuth(token,System.Func<obj,obj,unit>( fun err result->
+            if not <| isNull err then 
+                printfn "Error on resumeAuth: %O" err
+            
+            printfn "Token received: %O" result
+
+            lock?getUserInfo(result?accessToken, 
+                System.Func<obj,obj,unit> (fun err result ->
+                    if not<| isNull result then
+                        printfn "userProfile loaded %O" result
+                    AppMsg.LoggedIn |> dispatch
+                )
+            )|>ignore
+        )) |> ignore
         
         div [Id "loginAuth view"] [str "Login auth0"]
     | Model.Login ->
