@@ -1,6 +1,14 @@
-# A web stack designed for developer happiness
+# A sample of integrating 3rd Auth provider
 
-The following document describes the Fable + Suave sample project. You can see it running on azure at http://fable-suave.azurewebsites.net.
+implementation notes.
+
+* Integrated [Auth0](https://auth0.com/) provider via auth0lock
+* [Auth0Lock](src/client/Auth0Lock.fs) might be an example of interop with 3rd party libs
+* switched token handling lib from `jose-jwt` to `JwtSecurityToken` from .Net as it supports validation via public key
+* credentials are `test@example.com/test`. Using your own Auth0 credentials is strongly suggested. 
+* Canopy test is not adjusted to new login page and thus disabled
+
+# Readme from fable-suave-scaffold project
 
 ## Requirements
 
