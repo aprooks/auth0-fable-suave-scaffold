@@ -16,11 +16,30 @@ let myConfig =
     ]
 
 
+type Callback<'TErr,'TRes>  = System.Func<'TErr,'TRes,unit>
+
 type Model = 
 | Login 
 | TokenValidation of string
 
-let auth0lock:JsConstructor<string,string,obj> = importDefault "auth0-lock/lib/index.js"
+Utils.load "profile" |> printfn "loaded profile from storage: %O"
+
+type [<AllowNullLiteral>] AuthResult =
+    abstract accessToken : string with get
+    abstract idToken     : string with get
+
+type [<AllowNullLiteral>] Profile = 
+    abstract name        : string with get
+    abstract user_id     : string with get
+    abstract email       : string with get
+    abstract picture     : string with get
+
+type Lock = 
+    abstract show        : unit -> unit
+    abstract resumeAuth  : string -> Callback<obj,AuthResult> -> unit
+    abstract getUserInfo : string -> Callback<obj,Profile> -> unit
+    
+let auth0lock:JsConstructor<string,string,Lock> = importDefault "auth0-lock/lib/index.js"
 
 let lock = auth0lock.Create("E0a7096d6yYIPYtVdDR1XEChjqsA7p4e","fable-test.eu.auth0.com")
 
@@ -36,44 +55,45 @@ open Messages
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 
-let callback cb =
-    System.Func<obj,obj,unit>(
+let callback<'err,'res when 'err:null and 'res: null> cb =
+    System.Func<'err,'res,unit>(
         fun err result -> 
-        if not <| isNull err then 
-            Result.Error err |> cb
-        else if not <| isNull result then
-            Result.Ok result |> cb
-        else
-            failwith "Both error and result are empty which should be impossible ¯\\_(ツ)_/¯"
+            if not <| isNull err then 
+                Result.Error err |> cb
+            else if not <| isNull result then
+                Result.Ok result |> cb
+            else
+                failwith "Both error and result are empty which should be impossible ¯\\_(ツ)_/¯"
     )
     
 
 let view (model:Model) (dispatch: AppMsg -> unit) = 
     match model with 
     | TokenValidation token ->
-        lock?resumeAuth(
-            token,
-            callback <| fun res -> 
+        lock.resumeAuth token
+            (callback <| fun res -> 
                 match res with
                 | Result.Error err ->
                     printfn "Error on resumeAuth: %O" err
                 | Result.Ok authResult -> 
                     printfn "Token received: %O" authResult
-        
-                    lock?getUserInfo(authResult?accessToken, 
-                        callback <| fun res -> 
+                    Utils.save "token" authResult
+                    lock.getUserInfo 
+                        authResult.accessToken
+                        (callback <| fun res -> 
                             match res with
                             | Result.Ok profile ->
                                 printfn "userProfile loaded %O" profile
+                                Utils.save "profile" profile                                
                                 AppMsg.LoggedIn |> dispatch
                             | Result.Error err -> 
                                 printfn "error getting user profile %O" err
-                        )|> ignore
-        ) |> ignore
+                        )
+            )
         
         div [Id "loginAuth view"] [str "Login auth0"]
     | Model.Login ->
-        lock?show() |> ignore
+        lock.show()
         div [] [str "Auth 0 stub"]
 
 let login() =
@@ -81,4 +101,4 @@ let login() =
     | Some token -> ignore()
     | None -> 
         printfn "authenticating"
-        lock?show() |> ignore
+        lock.show()
