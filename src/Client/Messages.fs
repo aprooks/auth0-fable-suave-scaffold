@@ -3,6 +3,16 @@ module Client.Messages
 open System
 open ServerCode.Domain
 
+type Auth0User = 
+    {
+        AccessToken: string
+        IdToken    : string
+        Name       : string
+        Email      : string
+        Picture    : string
+        UserId     : string
+    }
+
 /// The messages processed during login 
 type LoginMsg =
   | GetTokenSuccess of string
@@ -32,6 +42,10 @@ type AppMsg =
   | WishListMsg of WishListMsg
   | Logout
   | ShowLogin
+  | Logout0
+  | LoggedIn0
+  | LoggedOut0
+  | ProfileLoaded of Auth0User
 
 
 /// The user data sent with every message.

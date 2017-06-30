@@ -13,15 +13,15 @@ let getPortsOrDefault defaultVal =
     | null -> defaultVal
     | value -> value |> uint16
 
-let testToken ()=
-    let principal = JwtToken.isValid JwtToken.exampleToken |> Option.get
+// let testToken ()=
+//     let principal = JwtToken.isValid JwtToken.exampleToken |> Option.get
     
-    printfn "loaded claims from example:"
-    principal.Claims |> Seq.iter(fun c -> printfn "%s %s" c.Type c.Value)
-    printfn "loaded identity: "
-    principal.Identity.Name |> printfn "%s"
+//     printfn "loaded claims from example:"
+//     principal.Claims |> Seq.iter(fun c -> printfn "%s %s" c.Type c.Value)
+//     printfn "loaded identity: "
+//     principal.Identity.Name |> printfn "%s"
 
-testToken()
+// testToken()
 
 [<EntryPoint>]
 let main args =

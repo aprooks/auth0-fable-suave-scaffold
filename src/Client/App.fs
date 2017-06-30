@@ -40,9 +40,9 @@ let pageParser : Parser<Page->_,_> =
 let urlUpdate (result:Page option) model =
     match result with
     | None ->
+        //hack since we cannot parse UrlEncoded token via parser func. 
         match LoginAuth.isAccessToken() with 
         | Some token -> 
-            debugger()
             ({model with Page = LoginAuth; SubModel = LoginAuth.TokenValidation token |> LoginAuthModel},[])
         | None ->
             Browser.console.error("Error parsing url")
@@ -76,6 +76,7 @@ let init result =
     m,Cmd.batch[cmd; menuCmd]
 
 let update msg model =
+    debugger();
     match msg, model.SubModel with
     | AppMsg.OpenLogIn, _ ->
         let m,cmd = Login.init None
@@ -129,16 +130,38 @@ let update msg model =
         { model with
             Page = Page.Home
             SubModel = NoSubModel
-            Menu = { model.Menu with User = None } },
+            Menu = { model.Menu with User = None }},
         Navigation.newUrl (toHash Page.Home)
-
     | AppMsg.Logout, _ ->
-        model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
+        model, Cmd.ofFunc Utils.delete "user"  (fun _ -> LoggedOut) StorageFailure
+    | AppMsg.LoggedOut0, _ ->
+        { model with
+            Page = Page.Home
+            SubModel = NoSubModel
+            Menu = { model.Menu with User0 = None }},
+        Navigation.newUrl (toHash Page.Home)
+    | AppMsg.Logout0, _ ->
+        model, Cmd.ofFunc Utils.delete "user0" (fun _ -> LoggedOut0) StorageFailure
     | AppMsg.ShowLogin, _ ->
         {model with
             Page = Page.LoginAuth
             SubModel = LoginAuth.Model.Login |> LoginAuthModel },
         Cmd.none
+    | AppMsg.ProfileLoaded profile, _ ->
+        {model with
+            Menu = {
+                model.Menu with User0 = Some profile
+            }}, 
+        Cmd.ofFunc (Utils.save "user0") profile (fun _ -> LoggedIn0) StorageFailure
+    | AppMsg.LoggedIn0, _ ->
+        let nextPage = Page.WishList
+        let m,cmd = urlUpdate (Some nextPage) model
+        match m.Menu.User0 with
+        | Some user ->
+            m, Cmd.batch [cmd; Navigation.newUrl (toHash nextPage) ]
+        | None ->
+            m, Cmd.ofMsg Logout0
+
 // VIEW
 
 open Fable.Helpers.React

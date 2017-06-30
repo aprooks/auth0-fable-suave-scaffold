@@ -34,6 +34,16 @@ type [<AllowNullLiteral>] Profile =
     abstract email       : string with get
     abstract picture     : string with get
 
+open Messages
+let auth0User (auth:AuthResult) (profile:Profile) = {
+        AccessToken = auth.accessToken
+        IdToken = auth.idToken
+        Name = profile.name
+        Email = profile.email
+        Picture = profile.picture
+        UserId = profile.user_id
+    }
+
 type Lock = 
     abstract show        : unit -> unit
     abstract resumeAuth  : string -> Callback<obj,AuthResult> -> unit
@@ -70,6 +80,7 @@ let callback<'err,'res when 'err:null and 'res: null> cb =
 let view (model:Model) (dispatch: AppMsg -> unit) = 
     match model with 
     | TokenValidation token ->
+        //move logic to App.update?
         lock.resumeAuth token
             (callback <| fun res -> 
                 match res with
@@ -84,8 +95,9 @@ let view (model:Model) (dispatch: AppMsg -> unit) =
                             match res with
                             | Result.Ok profile ->
                                 printfn "userProfile loaded %O" profile
-                                Utils.save "profile" profile                                
-                                AppMsg.LoggedIn |> dispatch
+                                auth0User authResult profile 
+                                |> AppMsg.ProfileLoaded
+                                |> dispatch
                             | Result.Error err -> 
                                 printfn "error getting user profile %O" err
                         )

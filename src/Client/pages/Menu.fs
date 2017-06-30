@@ -15,21 +15,24 @@ open System
 open Fable.Core.JsInterop
 
 type Model = {
-    User : UserData option
+    User  : UserData option
+    User0 : Auth0User option
     query : string
 }
 
-let init() = { User = Utils.load "user"; query = "" },Cmd.none
+let init() = { User = Utils.load "user"; query = ""; User0 = Utils.load "user0" },Cmd.none
 
 let view (model:Model) dispatch =
     div [ centerStyle "row" ] [ 
           yield viewLink Home "Home"
-          if model.User <> None then 
+          if model.User <> None || model.User0 <> None then 
               yield viewLink Page.WishList "Wishlist"
           if model.User = None then 
               yield viewLink (Login) "Login" 
-              yield viewLink (LoginAuth) "LoginAuth"
           else 
               yield buttonLink "logout" (fun _ -> dispatch Logout) [ str "Logout" ]
-          yield buttonLink "Login0" (fun _ -> dispatch ShowLogin) [str "Login0"]
+          if model.User0 = None then
+              yield buttonLink "login0" (fun _ -> dispatch ShowLogin) [str "Login0"]
+          else
+              yield buttonLink "logout" (fun _ -> dispatch Logout0) [ str <| sprintf "Logout [%s]" model.User0.Value.Name]
         ]

@@ -267,7 +267,7 @@ Target "All" DoNothing
   ==> "BuildClient"
   ==> "BuildTests"
   ==> "RenameDrivers"
-  ==> "RunTests"
+//   ==> "RunTests"   //leeeroy!
   ==> "All"
   ==> "Publish"
   ==> "CreateDockerImage"
