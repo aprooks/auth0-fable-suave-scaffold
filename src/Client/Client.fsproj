@@ -7,6 +7,7 @@
     <Compile Include="Messages.fs" />
     <Compile Include="Style.fs" />
     <Compile Include="Utils.fs" />
+    <Compile Include="Auth0Lock.fs"/>
     <Compile Include="pages/Menu.fs" />
     <Compile Include="pages/WishList.fs" />
     <Compile Include="pages/LoginAuth.fs" />

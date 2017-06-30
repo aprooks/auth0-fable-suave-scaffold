@@ -26,14 +26,12 @@ type Model =
     Menu : Menu.Model
     SubModel : SubModel }
 
-
 /// The URL is turned into a Result.
 let pageParser : Parser<Page->_,_> =
     oneOf
         [ map Home (s "home")
-          map Page.Login (s "login")
           map WishList (s "wishlist")
-          map Page.LoginAuth (s "loginauth") ]
+          map Page.LoginAuth (s "login") ]
 
 let urlUpdate (result:Page option) model =
     match result with
@@ -70,13 +68,10 @@ let init result =
     m,Cmd.batch[cmd; menuCmd]
 
 let update msg model =
-    debugger();
     match msg, model.SubModel with
     | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
         model, []
-
-    | LoginMsg msg, _ -> model, Cmd.none
 
     | WishListMsg msg, WishListModel m ->
         let m,cmd = WishList.update msg m
@@ -86,23 +81,11 @@ let update msg model =
 
     | WishListMsg msg, _ -> model, Cmd.none
 
-    | AppMsg.LoggedIn, _ ->
-        let nextPage = Page.WishList
-        let m,cmd = urlUpdate (Some nextPage) model
-        match m.Menu.User with
-        | Some user ->
-            m, Cmd.batch [cmd; Navigation.newUrl (toHash nextPage) ]
-        | None ->
-            m, Cmd.ofMsg Logout
-
-    | AppMsg.LoggedOut, _ ->
-        { model with
-            Page = Page.Home
-            SubModel = NoSubModel
-            Menu = { model.Menu with User = None }},
-        Navigation.newUrl (toHash Page.Home)
-    | AppMsg.Logout, _ ->
-        model, Cmd.ofFunc Utils.delete "user"  (fun _ -> LoggedOut) StorageFailure
+    | AppMsg.ShowLogin, _ ->
+        {model with
+            Page = Page.LoginAuth
+            SubModel = LoginAuth.Model.Login |> LoginAuthModel },
+        Cmd.none
     | AppMsg.LoggedOut0, _ ->
         { model with
             Page = Page.Home
@@ -111,15 +94,9 @@ let update msg model =
         Navigation.newUrl (toHash Page.Home)
     | AppMsg.Logout0, _ ->
         model, Cmd.ofFunc Utils.delete "user0" (fun _ -> LoggedOut0) StorageFailure
-    | AppMsg.ShowLogin, _ ->
-        {model with
-            Page = Page.LoginAuth
-            SubModel = LoginAuth.Model.Login |> LoginAuthModel },
-        Cmd.none
     | AppMsg.ProfileLoaded profile, _ ->
         {model with
-            Menu = {
-                model.Menu with User0 = Some profile
+            Menu = { model.Menu with User0 = Some profile
             }}, 
         Cmd.ofFunc (Utils.save "user0") profile (fun _ -> LoggedIn0) StorageFailure
     | AppMsg.LoggedIn0, _ ->

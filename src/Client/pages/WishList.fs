@@ -54,7 +54,7 @@ let postWishList (token,wishList) =
 let postWishListCmd (token,wishList) = 
     Cmd.ofPromise postWishList (token,wishList) FetchedWishList FetchError
 
-let init (user:Auth0User) = 
+let init (user:UserProfile) = 
     { WishList = WishList.New user.Name
       Token = user.AccessToken
       NewBook = Book.empty

@@ -3,13 +3,7 @@ namespace ServerCode.Domain
    
 open System
 
-// Json web token type.
 type JWT = string
-
-// Login credentials.
-type Login = 
-    { UserName : string
-      Password : string }
 
 /// The data for each book in /api/wishlist
 type Book = 
