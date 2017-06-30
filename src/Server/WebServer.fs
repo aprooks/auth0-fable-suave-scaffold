@@ -30,8 +30,6 @@ let start clientPath port =
                 path "/api/wishlist/" >=> WishList.getWishList ]
 
             POST >=> choose [
-                path "/api/users/login" >=> Auth.login
-
                 path "/api/wishlist/" >=> WishList.postWishList
             ]
 

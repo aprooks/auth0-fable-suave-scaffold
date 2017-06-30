@@ -9,7 +9,6 @@
     <Compile Include="Utils.fs" />
     <Compile Include="pages/Menu.fs" />
     <Compile Include="pages/WishList.fs" />
-    <Compile Include="pages/Login.fs" />
     <Compile Include="pages/LoginAuth.fs" />
     <Compile Include="App.fs" />
     <!--Keep this version synced with dotnet-fable in .fsproj-->

@@ -18,7 +18,6 @@ open Fable.Import.JS
 
 type SubModel =
   | NoSubModel
-  | LoginModel of Login.Model
   | WishListModel of WishList.Model
   | LoginAuthModel of LoginAuth.Model
 
@@ -47,10 +46,6 @@ let urlUpdate (result:Page option) model =
             Browser.console.error("Error parsing url")
             ( model, Navigation.modifyUrl (toHash model.Page) )
 
-    | Some (Page.Login as page) ->
-        let m,cmd = Login.init model.Menu.User
-        { model with Page = page; SubModel = LoginModel m }, Cmd.map LoginMsg cmd
-
     | Some (Page.WishList as page) ->
         match model.Menu.User0 with
         | Some user ->
@@ -77,34 +72,9 @@ let init result =
 let update msg model =
     debugger();
     match msg, model.SubModel with
-    | AppMsg.OpenLogIn, _ ->
-        let m,cmd = Login.init None
-        { model with
-            Page = Page.Login
-            SubModel = LoginModel m }, Cmd.batch [cmd; Navigation.newUrl (toHash Page.Login) ]
-
     | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
         model, []
-
-    | LoginMsg msg, LoginModel m ->
-        let m,cmd = Login.update msg m
-        let cmd = Cmd.map LoginMsg cmd
-        match m.State with
-        | Login.LoginState.LoggedIn token ->
-            let newUser : UserData = { UserName = m.Login.UserName; Token = token }
-            let cmd =
-                if model.Menu.User = Some newUser then cmd else
-                Cmd.batch [cmd
-                           Cmd.ofFunc (Utils.save "user") newUser (fun _ -> LoggedIn) StorageFailure ]
-
-            { model with
-                SubModel = LoginModel m
-                Menu = { model.Menu with User = Some newUser }}, cmd
-        | _ ->
-            { model with
-                SubModel = LoginModel m
-                Menu = { model.Menu with User = None } }, cmd
 
     | LoginMsg msg, _ -> model, Cmd.none
 
@@ -173,12 +143,6 @@ let viewPage model dispatch =
     | Page.Home ->
         [ words 60 "Welcome!"
           a [ Href "http://fable.io" ] [ words 20 "Learn Fable at fable.io" ] ]
-
-    | Page.Login ->
-        match model.SubModel with
-        | LoginModel m ->
-            [ div [ ] [ Login.view m dispatch ]]
-        | _ -> [ ]
 
     | Page.WishList ->
         match model.SubModel with

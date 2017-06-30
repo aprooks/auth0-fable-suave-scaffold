@@ -5,6 +5,7 @@ open Fable.Core
 open Fable.Import.JS
 open Fable.Import.Browser
 
+open Messages
 let myConfig = 
     createObj [
        "oidcConformat" ==> true
@@ -33,7 +34,6 @@ type [<AllowNullLiteral>] Profile =
     abstract email       : string with get
     abstract picture     : string with get
 
-open Messages
 let auth0User (auth:AuthResult) (profile:Profile) = {
         AccessToken = auth.accessToken
         Name = profile.name
@@ -49,7 +49,8 @@ type Lock =
     
 let auth0lock:JsConstructor<string,string,obj,Lock> = importDefault "auth0-lock/lib/index.js"
 
-let lock = auth0lock.Create("E0a7096d6yYIPYtVdDR1XEChjqsA7p4e","fable-test.eu.auth0.com",myConfig)
+//TODO: move client id and domain to config via webpack
+let lock = auth0lock.Create("E0a7096d6yYIPYtVdDR1XEChjqsA7p4e", "fable-test.eu.auth0.com", myConfig)
 
 let isAccessToken() = 
     let hash = window.location.hash
@@ -57,9 +58,6 @@ let isAccessToken() =
     | true -> Some hash
     | false -> None
 
-let exampleTokenUrl = """http://localhost:8080/#access_token=fpngg5V9VCKmfhle&expires_in=86400&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2ZhYmxlLXRlc3QuZXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDU5NTIyOWMzYTNlNDM3NmZlYmQ0MDBjZSIsImF1ZCI6IkUwYTcwOTZkNnlZSVBZdFZkRFIxWEVDaGpxc0E3cDRlIiwiZXhwIjoxNDk4NzAwODk5LCJpYXQiOjE0OTg2NjQ4OTl9.Fo4L-xe8IEwJCtM8YTpx5XUYKxDRPRPpltYtxTfs3Qs&token_type=Bearer&state=za51ObdDLsuxTTR50UnzITuQFrRuRZVN"""
-
-open Messages
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 
@@ -78,26 +76,27 @@ let callback<'err,'res when 'err:null and 'res: null> cb =
 let view (model:Model) (dispatch: AppMsg -> unit) = 
     match model with 
     | TokenValidation token ->
-        //move logic to App.update?
-        lock.resumeAuth token
+        //TODO: move logic to App.update via Cmd?
+        lock.resumeAuth 
+            token
             (callback <| fun res -> 
                 match res with
                 | Result.Error err ->
-                    printfn "Error on resumeAuth: %O" err
+                    printfn "[Auth] Error on resumeAuth: %O" err
                 | Result.Ok authResult -> 
-                    printfn "Token received: %O" authResult
-                    Utils.save "token" authResult
+                    printfn "[Auth] Token received: %O" authResult
+
                     lock.getUserInfo 
                         authResult.accessToken
                         (callback <| fun res -> 
                             match res with
                             | Result.Ok profile ->
-                                printfn "userProfile loaded %O" profile
+                                printfn "[Auth] userProfile loaded %O" profile
                                 auth0User authResult profile 
                                 |> AppMsg.ProfileLoaded
                                 |> dispatch
                             | Result.Error err -> 
-                                printfn "error getting user profile %O" err
+                                printfn "[Auth] error getting user profile %O" err
                         )
             )
         
@@ -105,10 +104,3 @@ let view (model:Model) (dispatch: AppMsg -> unit) =
     | Model.Login ->
         lock.show()
         div [] [str "Auth 0 stub"]
-
-let login() =
-    match Utils.load "auth" with
-    | Some token -> ignore()
-    | None -> 
-        printfn "authenticating"
-        lock.show()
