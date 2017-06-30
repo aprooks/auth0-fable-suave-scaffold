@@ -14,12 +14,15 @@ let getPortsOrDefault defaultVal =
     | value -> value |> uint16
 
 // let testToken ()=
-//     let principal = JwtToken.isValid JwtToken.exampleToken |> Option.get
-    
-//     printfn "loaded claims from example:"
-//     principal.Claims |> Seq.iter(fun c -> printfn "%s %s" c.Type c.Value)
-//     printfn "loaded identity: "
-//     principal.Identity.Name |> printfn "%s"
+//     let tkn = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2ZhYmxlLXRlc3QuZXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDU5NTIyOWMzYTNlNDM3NmZlYmQ0MDBjZSIsImF1ZCI6IkUwYTcwOTZkNnlZSVBZdFZkRFIxWEVDaGpxc0E3cDRlIiwiZXhwIjoxNDk4ODcxNTk2LCJpYXQiOjE0OTg4MzU1OTZ9.uZxxR9RN-vUJk08HtS1NdJkAk0z6CKZ4g53lcCyFUes";
+//     match JwtToken.isValid tkn with 
+//     | Some principal ->
+        
+//         printfn "loaded claims from example:"
+//         principal.Claims |> Seq.iter(fun c -> printfn "%s %s" c.Type c.Value)
+//         printfn "loaded identity: "
+//         principal.Identity.Name |> printfn "%s"
+//     | None -> printfn "Token considered to be invalid :("
 
 // testToken()
 

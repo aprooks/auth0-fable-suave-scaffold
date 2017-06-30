@@ -6,7 +6,6 @@ open ServerCode.Domain
 type Auth0User = 
     {
         AccessToken: string
-        IdToken    : string
         Name       : string
         Email      : string
         Picture    : string

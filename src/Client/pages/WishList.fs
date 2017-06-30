@@ -54,16 +54,15 @@ let postWishList (token,wishList) =
 let postWishListCmd (token,wishList) = 
     Cmd.ofPromise postWishList (token,wishList) FetchedWishList FetchError
 
-let init (user:UserData) = 
-    { WishList = WishList.New user.UserName
-      Token = user.Token
+let init (user:Auth0User) = 
+    { WishList = WishList.New user.Name
+      Token = user.AccessToken
       NewBook = Book.empty
       NewBookId = Guid.NewGuid()
       TitleErrorText = None
       AuthorsErrorText = None
       LinkErrorText = None
-      ErrorMsg = "" }, loadWishListCmd user.Token
-
+      ErrorMsg = "" }, loadWishListCmd user.AccessToken
 
 let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> = 
     match msg with

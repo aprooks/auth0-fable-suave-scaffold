@@ -53,9 +53,9 @@ let saveWishListToDB (wishList:WishList) =
 
 /// Handle the GET on /api/wishlist
 let getWishList (ctx: HttpContext) =
-    Auth.useToken ctx (fun token -> async {
+    Auth0.useToken ctx (fun token -> async {
         try
-            let wishList = getWishListFromDB token.UserName
+            let wishList = getWishListFromDB token.Identity.Name
             return! Successful.OK (FableJson.toJson wishList) ctx
         with exn ->
             logger.error (eventX "SERVICE_UNAVAILABLE" >> addExn exn)
@@ -64,15 +64,15 @@ let getWishList (ctx: HttpContext) =
 
 /// Handle the POST on /api/wishlist
 let postWishList (ctx: HttpContext) =
-    Auth.useToken ctx (fun token -> async {
+    Auth0.useToken ctx (fun token -> async {
         try
             let wishList = 
                 ctx.request.rawForm
                 |> System.Text.Encoding.UTF8.GetString
                 |> FableJson.ofJson<Domain.WishList>
             
-            if token.UserName <> wishList.UserName then
-                return! UNAUTHORIZED (sprintf "WishList is not matching user %s" token.UserName) ctx
+            if token.Identity.Name <> wishList.UserName then
+                return! UNAUTHORIZED (sprintf "WishList is not matching user %s" token.Identity.Name) ctx
             else
                 if Validation.verifyWishList wishList then
                     saveWishListToDB wishList

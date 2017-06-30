@@ -13,7 +13,6 @@ open Elmish.Browser.Navigation
 open Client.Messages
 open Elmish.Browser.UrlParser
 open Fable.Import.JS
-// Client.LoginAuth.login() 
 
 // Model
 
@@ -53,12 +52,12 @@ let urlUpdate (result:Page option) model =
         { model with Page = page; SubModel = LoginModel m }, Cmd.map LoginMsg cmd
 
     | Some (Page.WishList as page) ->
-        match model.Menu.User with
+        match model.Menu.User0 with
         | Some user ->
             let m,cmd = WishList.init user
             { model with Page = page; SubModel = WishListModel m }, Cmd.map WishListMsg cmd
         | None ->
-            model, Cmd.ofMsg Logout
+            model, Cmd.ofMsg Logout0
 
     | Some (Home as page) ->
         { model with Page = page; Menu = { model.Menu with query = "" } }, []

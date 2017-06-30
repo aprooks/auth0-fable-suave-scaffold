@@ -7,14 +7,14 @@ open Fable.Import.Browser
 
 let myConfig = 
     createObj [
-        "domain" ==> "fable-test.eu.auth0.com"
-        "clientID" ==> "E0a7096d6yYIPYtVdDR1XEChjqsA7p4e"
-        "callbackUrl" ==> "http://localhost:8080/#home"
-        "apiUrl" ==> "fable.example.com"
-        "responseType" ==> "token id_token"
-        "scope" ==> "openid profile"
+       "oidcConformat" ==> true
+       "auth" ==> createObj [
+           "params" ==> createObj [
+                "scope"    ==> "openid profile"
+                "audience" ==> "fable.example.com"
+            ]
+        ]
     ]
-
 
 type Callback<'TErr,'TRes>  = System.Func<'TErr,'TRes,unit>
 
@@ -26,7 +26,6 @@ Utils.load "profile" |> printfn "loaded profile from storage: %O"
 
 type [<AllowNullLiteral>] AuthResult =
     abstract accessToken : string with get
-    abstract idToken     : string with get
 
 type [<AllowNullLiteral>] Profile = 
     abstract name        : string with get
@@ -37,7 +36,6 @@ type [<AllowNullLiteral>] Profile =
 open Messages
 let auth0User (auth:AuthResult) (profile:Profile) = {
         AccessToken = auth.accessToken
-        IdToken = auth.idToken
         Name = profile.name
         Email = profile.email
         Picture = profile.picture
@@ -49,9 +47,9 @@ type Lock =
     abstract resumeAuth  : string -> Callback<obj,AuthResult> -> unit
     abstract getUserInfo : string -> Callback<obj,Profile> -> unit
     
-let auth0lock:JsConstructor<string,string,Lock> = importDefault "auth0-lock/lib/index.js"
+let auth0lock:JsConstructor<string,string,obj,Lock> = importDefault "auth0-lock/lib/index.js"
 
-let lock = auth0lock.Create("E0a7096d6yYIPYtVdDR1XEChjqsA7p4e","fable-test.eu.auth0.com")
+let lock = auth0lock.Create("E0a7096d6yYIPYtVdDR1XEChjqsA7p4e","fable-test.eu.auth0.com",myConfig)
 
 let isAccessToken() = 
     let hash = window.location.hash
