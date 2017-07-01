@@ -13,6 +13,7 @@ let getPortsOrDefault defaultVal =
     | null -> defaultVal
     | value -> value |> uint16
 
+Dependency.Say.hello "test"
 // let testToken ()=
 //     let tkn = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2ZhYmxlLXRlc3QuZXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDU5NTIyOWMzYTNlNDM3NmZlYmQ0MDBjZSIsImF1ZCI6IkUwYTcwOTZkNnlZSVBZdFZkRFIxWEVDaGpxc0E3cDRlIiwiZXhwIjoxNDk4ODcxNTk2LCJpYXQiOjE0OTg4MzU1OTZ9.uZxxR9RN-vUJk08HtS1NdJkAk0z6CKZ4g53lcCyFUes";
 //     match JwtToken.isValid tkn with 
