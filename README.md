@@ -1,4 +1,4 @@
-# A sample of integrating 3rd Auth provider
+# A sample of integrating 3d party auth provider
 
 implementation notes.
 
