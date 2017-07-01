@@ -5,7 +5,7 @@ implementation notes.
 * Integrated [Auth0](https://auth0.com/) provider via auth0lock
 * [Auth0Lock](/src/Client/Auth0Lock.fs) might be an example of interop with 3rd party libs
 * switched token handling lib from `jose-jwt` to `JwtSecurityToken` from .Net as it supports validation via public key
-* credentials are `test@example.com/test`. Using your own Auth0 credentials is strongly suggested. 
+* credentials are `test@example.com/test`. Though using your own Auth0 profile and credentials is strongly suggested. 
 * Canopy test is not adjusted to new login page and thus disabled
 
 # Readme from fable-suave-scaffold project
