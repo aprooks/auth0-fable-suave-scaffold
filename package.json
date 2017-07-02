@@ -1,12 +1,13 @@
 {
   "private": true,
   "dependencies": {
+    "auth0-lock": "^10.18.0",
     "babel-runtime": "^6.23.0",
+    "fable-powerpack": "^0.0.20",
     "react": "^15.6.1",
     "react-bootstrap": "^0.31.0",
     "react-dom": "^15.6.1",
-    "remotedev": "^0.2.7",
-    "auth0-lock": "^10.18.0"
+    "remotedev": "^0.2.7"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",

@@ -164,17 +164,6 @@ asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
 
-auth0-js@^8.8.0:
-  version "8.8.0"
-  resolved "https://registry.yarnpkg.com/auth0-js/-/auth0-js-8.8.0.tgz#9c63bcc5ed04212a23e56844857c23bdf598321f"
-  dependencies:
-    base64-js "^1.2.0"
-    idtoken-verifier "^1.1.0"
-    qs "^6.4.0"
-    superagent "^3.3.1"
-    url-join "^1.1.0"
-    winchan "^0.2.0"
-
 auth0-js@~8.7.0:
   version "8.7.0"
   resolved "https://registry.yarnpkg.com/auth0-js/-/auth0-js-8.7.0.tgz#679bf18c574a5404e46f05daccadaba4c6f774eb"
@@ -1311,6 +1300,10 @@ fable-loader@^1.0.5:
   dependencies:
     fable-utils "^1.0.0"
 
+fable-powerpack@^0.0.20:
+  version "0.0.20"
+  resolved "https://registry.yarnpkg.com/fable-powerpack/-/fable-powerpack-0.0.20.tgz#485ec0e1f805c5486d646513dcc3c2e36ec5e30e"
+
 fable-utils@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fable-utils/-/fable-utils-1.0.0.tgz#3e746283010d775f3b95208805c71c7f75143011"
@@ -1666,7 +1659,7 @@ iconv-lite@~0.4.13:
   version "0.4.17"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.17.tgz#4fdaa3b38acbc2c031b045d0edcdfe1ecab18c8d"
 
-idtoken-verifier@^1.0.1, idtoken-verifier@^1.0.2, idtoken-verifier@^1.1.0:
+idtoken-verifier@^1.0.1, idtoken-verifier@^1.0.2:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/idtoken-verifier/-/idtoken-verifier-1.1.0.tgz#1add30125aa3e5e5859d152b356a908a8e2eb5a0"
   dependencies:
